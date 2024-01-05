@@ -27,9 +27,6 @@ const ContactList = () => {
   const filteredContacts = useSelector(selectVisibleContacts);
 
   const isLoading = useSelector(selectIsLoading);
-
-  
-
   return (
     <>
       <ul>
