@@ -1,10 +1,10 @@
 import { useDispatch } from 'react-redux';
 import { Input } from './FilterStyle';
-import { addFilterAction } from 'store/filter/filterSlice';
+import { setFilter} from 'components/redux/contacts/filterSlice';
 const Filter = () => {
   const dispatch = useDispatch();
   const onChange = ({ target: { value } }) => {
-    dispatch(addFilterAction(value));
+    dispatch(setFilter(value));
   };
 
   return (

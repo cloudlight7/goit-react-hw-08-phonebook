@@ -1,28 +1,48 @@
-//import { data} from './BoxButtonStyle'
 import { useDispatch, useSelector } from 'react-redux';
-import Contact from '../Contact';
-import { getContactAction } from 'store/contacts/contactSlice';
+
 import { useEffect } from 'react';
-import {  selectError, selectLoading, selectVisibleContacts } from './selectors';
+
 import Loader from 'components/Loader';
+import { toast } from 'react-toastify';
+import {
+  fetchContacts,
+} from 'components/redux/contacts/operation';
+import {
+  selectError,
+  selectIsLoading,
+  selectVisibleContacts,
+} from 'components/redux/contacts/selectors';
+import Contact from 'components/Contact';
 
-const FeedbackOptions = () => {
+const ContactList = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(selectVisibleContacts);
   const error = useSelector(selectError);
-  const isload = useSelector(selectLoading);
-
   useEffect(() => {
-      dispatch(getContactAction());
-   
-  }, [dispatch]);
+    if (!!error) {
+      toast.error(error);
+    }
+    dispatch(fetchContacts());
+  }, [dispatch, error]);
+
+  const filteredContacts = useSelector(selectVisibleContacts);
+
+  const isLoading = useSelector(selectIsLoading);
+
+  
+
   return (
-    <ul>
-      {isload&& <h2>{error}</h2>}
-      {isload?<Loader/> : contacts.map(item => {
-        return <Contact key={item.id} item={item} />;
-      })}
-    </ul>
+    <>
+      <ul>
+        {isLoading && <Loader />}
+        {!!filteredContacts.length &&
+          filteredContacts.map(item => {
+            return <Contact key={item.id} item={item} />
+          })}
+      </ul>
+    </>
   );
 };
-export default FeedbackOptions;
+
+export default ContactList;
+
+

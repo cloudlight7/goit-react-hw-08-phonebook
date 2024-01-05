@@ -1,24 +1,25 @@
 //mport React from 'react';
 import { FormCard, FormBox, InputName, Input, Button } from './FormStyle';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContactAction} from 'store/contacts/contactSlice';
 import * as Yup from 'yup';
 import "yup-phone-lite";
 import { useFormik } from 'formik/dist';
-const CreateContactForm = () => {
-  const { contacts } = useSelector(state => state.contacts);
+import { addContact } from 'components/redux/contacts/operation';
+import { selectContacts } from 'components/redux/contacts/selectors';
+export const CreateContactForm = () => {
+  const contacts  = useSelector(selectContacts);
   const dispatch = useDispatch();
   const formik = useFormik({
     initialValues: {
       name: '',
-      phone: '',
+      number: '',
     },
     validationSchema: Yup.object({
       name: Yup.string()
         .min(2, 'Too Short!')
         .max(8, 'Too Long!')
         .required('Required name'),
-        phone: Yup.number()
+        number: Yup.number()
         .min(12,'Too Short!')
         .typeError("That doesn't look like a phone number")
         .positive("A phone number can't start with a minus")
@@ -26,12 +27,13 @@ const CreateContactForm = () => {
         .required('A phone number is required'),
     }),
     onSubmit: values => {
-      if (contacts.items.find(option => option.name === values.name)) {
+      if (contacts.find(option => option.name.toLowerCase() === values.name.toLowerCase())) {
         formik.resetForm();
         alert(`${values.name} is already in contact.`);
         return;
       }
-      dispatch(addContactAction(values))
+      dispatch(addContact(values))
+      formik.setSubmitting(false);
       formik.resetForm();
       //alert(JSON.stringify(values, null, 2));
     },
@@ -59,20 +61,20 @@ const CreateContactForm = () => {
         </FormBox>
         <FormBox>
           <InputName htmlFor="lastName">phone</InputName>
-          {formik.touched.phone && formik.errors.phone ? (
-            <div className="error">{formik.errors.phone}</div>
+          {formik.touched.number && formik.errors.number ? (
+            <div className="error">{formik.errors.number}</div>
           ) : null}
           <Input
             style={
-              formik.touched.phone && formik.errors.phone
+              formik.touched.number && formik.errors.number
                 ? { backgroundColor: 'red' }
                 : null
             }
-            id="phone"
-            name="phone"
+            id="number"
+            name="number"
             type="tel"
             onChange={formik.handleChange}
-            value={formik.values.phone}
+            value={formik.values.number}
           />
         </FormBox>
         <Button type="submit">Submit</Button>
@@ -80,4 +82,3 @@ const CreateContactForm = () => {
     </FormCard>
   );
 };
-export default CreateContactForm;
